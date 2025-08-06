@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.sunbird.obsrv.connector</groupId>
     <artifactId>sb-knowlg-connector</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
     <packaging>jar</packaging>
     <name>SB Knowlg Connector</name>
     <description>
