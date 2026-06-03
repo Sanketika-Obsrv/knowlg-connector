@@ -44,8 +44,17 @@ class SBKnowlgConnectorSource extends IConnectorSource {
       .setTopics(config.getString("source_kafka_topic"))
       .setDeserializer(new StringDeserializationSchema)
       .setProperties(kafkaConsumerProperties(config))
-      .setStartingOffsets(OffsetsInitializer.committedOffsets(OffsetResetStrategy.EARLIEST))
+      .setStartingOffsets(OffsetsInitializer.committedOffsets(offsetResetStrategy(config)))
       .build()
+  }
+
+  private def offsetResetStrategy(config: Config): OffsetResetStrategy = {
+    val value = if (config.hasPath("source_kafka_auto_offset_reset")) config.getString("source_kafka_auto_offset_reset") else "earliest"
+    value.toLowerCase match {
+      case "latest" => OffsetResetStrategy.LATEST
+      case "none"   => OffsetResetStrategy.NONE
+      case _         => OffsetResetStrategy.EARLIEST
+    }
   }
   override def getSourceStream(env: StreamExecutionEnvironment, config: Config): SingleOutputStreamOperator[String] = {
     env.fromSource(kafkaSource(config), WatermarkStrategy.noWatermarks[String](), config.getString("source_kafka_consumer_id")).uid(config.getString("source_kafka_consumer_id"))
